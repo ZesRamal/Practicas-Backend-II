@@ -6,53 +6,77 @@ import pickle
 
 class Servidor():
     def __init__(self, host="localhost", port=7000):
+        self.clientes = []
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.bind((str(host), int(port)))
         self.sock.listen(10)
-        print(f"Servidor iniciado en {host}:{port}")
-        self.clientes = []
+        self.sock.setblocking(False)
+
+        # Threads for accepting and processing connections
+        aceptar = threading.Thread(target=self.aceptarCon)
+        procesar = threading.Thread(target=self.procesarCon)
+        aceptar.daemon = True
+        aceptar.start()
+        procesar.daemon = True
+        procesar.start()
         
-        while True:
-            conn, addr = self.sock.accept()
-            print(f"Conexión aceptada de {addr}")
-            self.clientes.append(conn)
-            threading.Thread(target=self.procesar_conexion, args=(conn,)).start()
-    
-    def procesar_conexion(self, conn):
+        try:
+            while True:
+                msg = input('-> ')
+                if msg == 'salir':
+                    break
+        finally:
+            self.sock.close()
+            sys.exit()
+
+    def msg_to_all(self, msg, cliente):
+        for c in self.clientes:
+            if c != cliente:
+                try:
+                    c.send(msg)
+                except:
+                    self.clientes.remove(c)
+
+    def aceptarCon(self):
+        print("aceptarCon iniciado")
         while True:
             try:
-                data = conn.recv(1024)
-                if not data:
-                    break
-                command = pickle.loads(data)
-                response = self.ejecutar_comando(command)
-                conn.send(pickle.dumps(response))
-            except Exception as e:
-                print(f"Error: {e}")
-                break
-        conn.close()
+                conn, addr = self.sock.accept()
+                conn.setblocking(False)
+                self.clientes.append(conn)
+                print(f"Cliente {addr} conectado")
+            except:
+                pass
 
-    def ejecutar_comando(self, command):
-        if command == "lsFiles":
-            return self.listar_archivos()
-        elif command.startswith("get "):
-            filename = command.split(" ")[1]
-            return self.enviar_archivo(filename)
-        else:
-            return "Comando no reconocido."
+    def procesarCon(self):
+        print("ProcesarCon iniciado")
+        while True:
+            if self.clientes:
+                for c in self.clientes:
+                    try:
+                        data = c.recv(1024)
+                        if data:
+                            self.msg_to_all(data,c)
+                            command = pickle.loads(data)
+                            if command == "lsFiles":
+                                self.list_files(c)
+                            elif command.startswith("get "):
+                                filename = command.split(" ", 1)[1]
+                                self.send_file(c, filename)
+                    except:
+                        pass
 
-    def listar_archivos(self):
+    def list_files(self, client):
         files = os.listdir("Files")
-        return files
+        client.send(pickle.dumps(files))
 
-    def enviar_archivo(self, filename):
+    def send_file(self, client, filename):
         filepath = os.path.join("Files", filename)
         if os.path.isfile(filepath):
             with open(filepath, 'rb') as f:
                 file_data = f.read()
-            return file_data
+            client.send(pickle.dumps({"filename": filename, "data": file_data}))
         else:
-            return "Archivo no encontrado."
+            client.send(pickle.dumps({"error": "File not found"}))
 
-if __name__ == "__main__":
-    server = Servidor()
+server = Servidor()
