@@ -36,7 +36,7 @@ class Cliente():
                         self.save_file(data['filename'], data['data'])
                     elif 'error' in data:
                         print(data['error'])
-                    elif data.startswith("get") == False:
+                    elif data.startswith("get") == False and data != "lsFiles":
                         print(data)
             except Exception as e:
                 print(f"Error al recibir datos: {e}")
