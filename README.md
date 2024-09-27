@@ -1,6 +1,6 @@
 # ChatCMD
 
-Elaborado por: Ramos Leal Cesar Francisco
+<b>Elaborado por:<b/> Ramos Leal Cesar Francisco
 
 Ésta práctica consiste en un chat de terminal entre instancias de clientes conectados a una instacia de servidor para compartir mensajes entre clientes. 
 Además presenta la posibilidad de introducir el comando "lsFiles" para obtener la lista de archivos en el directorio de "Files" del servidor y el comando "get [nombre de archivo]" para transferir un archivo del servidor al cliente.
