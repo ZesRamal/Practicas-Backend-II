@@ -25,16 +25,16 @@ class Cliente():
     def msg_recv(self):
         while True:
             try:
-                data = self.sock.recv(1024)
+                data = self.sock.recv(1600000)
                 if data:
                     data = pickle.loads(data)
-                    if isinstance(data, list):  # List of files
+                    if isinstance(data, list):
                         print("Archivos en el servidor:")
                         for filename in data:
                             print(filename)
-                    elif isinstance(data, dict) and 'data' in data:  # File data
+                    elif isinstance(data, dict) and 'data' in data:
                         self.save_file(data['filename'], data['data'])
-                    elif 'error' in data:  # Error message
+                    elif 'error' in data:
                         print(data['error'])
                     elif data.startswith("get") == False:
                         print(data)
@@ -51,8 +51,19 @@ class Cliente():
 
     def save_file(self, filename, data):
         download_path = os.path.join("Downloads", filename)
+        total_size = len(data)  
+        chunk_size = 1024
+        written_size = 0
+    
         with open(download_path, 'wb') as f:
-            f.write(data)
-        print(f"Archivo '{filename}' guardado en 'Downloads'")
+            for i in range(0, total_size, chunk_size):
+                f.write(data[i:i + chunk_size])
+                written_size += len(data[i:i + chunk_size])
+    
+                percentage = (written_size / total_size) * 100
+                print(f"Saving '{filename}': {percentage:.2f}% complete", end='\r')
+    
+        print(f"\nArchivo '{filename}' guardado en 'Downloads'")
+
 
 cliente = Cliente()
