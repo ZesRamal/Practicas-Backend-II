@@ -8,7 +8,7 @@ El puerto abierto es el default de postgres 5432.
 
 En el docker-compose en 'enviroment' se pueden cambiar los valores de las variables según la preferencia del usuario, contraseña y nombre de base de datos.
 
-Para ejecutarlo se abre una terminal en la ubicación del proyecto y ejecutar lo siguiente:
+Para ejecutarlo se abre una terminal en la ubicación de la carpeta nginx y se escriben los siguientes comandos:
 
 ```bash
 # Construir la imagen
