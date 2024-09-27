@@ -1,6 +1,6 @@
 # Docker PostgreSQL
 
-Elaborado por: Ramos Leal Cesar Francisco
+<b>Elaborado por:</b> Ramos Leal Cesar Francisco
 
 Ésta práctica consiste en generar un Docker, abrir su puerto, generar la base de datos encontrada en el Classroom, e introducir información a ésta última.
 
