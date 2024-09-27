@@ -9,6 +9,6 @@ Para ejecutarlo se debe de correr el archivo de server-socket.py y un máximo de
 
 ### Implementaciones pendientes:
 - Permitir solo el envío de archivos de texto.
-- Implementar indicador de progreso de envío de archivo.
+- <s>Implementar indicador de progreso de envío de archivo.</s>
 - Comando de ayuda.
 - Indicar el límite de peso de archivo a descargar.
